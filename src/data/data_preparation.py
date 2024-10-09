@@ -4,6 +4,9 @@ import os
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from pdf2image import convert_from_path
+from PIL import Image
+
+from utils.templates import DESCRIBING_SLIDE_PROMPT_TEMPLATE
 
 
 def save_pdf_pages_as_images(pdf_path, output_dir):
@@ -65,9 +68,43 @@ def image_summarize(img_base64, prompt):
 
 
 def prepare_text_from_image(img_path):
-    prompt = """Опиши ключевую информацию, которая представлена на изображении. \
-Описание должно быть конкретным и точным. Обрати особое внимание на графики, диаграммы \
-или визуальные элементы, которые можно проанализировать.
-    Очень важно не упустить детали. Ответь в формате Markdown."""
     base64_image = encode_image(img_path)
-    return image_summarize(base64_image, prompt)
+    return image_summarize(base64_image, DESCRIBING_SLIDE_PROMPT_TEMPLATE)
+
+
+def create_texts_from_images(input_dir, output_dir):
+    # Проверяем, существует ли папка для текстовых файлов, если нет, создаем её
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Проходим по каждому файлу в папке с изображениями
+    for image_filename in os.listdir(input_dir):
+        # Полный путь к изображению
+        image_path = os.path.join(input_dir, image_filename)
+
+        # Проверяем, что это изображение (например, файл с расширением PNG или JPG)
+        if image_filename.lower().endswith((".png", ".jpg", ".jpeg", ".bmp")):
+            # Открываем изображение, если оно действительно является изображением
+            try:
+                with Image.open(image_path):
+                    result = prepare_text_from_image(image_path)
+
+                    # Генерируем имя файла для текстового результата
+                    output_filename = os.path.splitext(image_filename)[0] + ".txt"
+                    output_path = os.path.join(output_dir, output_filename)
+
+                    # Записываем результат функции в текстовый файл
+                    with open(output_path, "w", encoding="utf-8") as f:
+                        f.write(result)
+                    print(
+                        f"Результат для {image_filename} сохранен в {output_filename}"
+                    )
+            except Exception as e:
+                print(f"Ошибка при обработке {image_filename}: {e}")
+
+
+if __name__ == "main":
+    input_dir = "../../data/interim/images/"
+    output_dir = "../../data/interim/texts/"
+
+    create_texts_from_images(input_dir, output_dir)
