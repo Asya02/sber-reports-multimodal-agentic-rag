@@ -3,8 +3,9 @@ from langchain_core.messages import AIMessage, convert_to_messages
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
-from utils.helpers import LLM, RETRIVER, TAVILY_SEARCH_TOOL, GraphState
-from utils.templates import QUERY_REWRITING_TEMPLATE, RAG_TEMPLATE
+from sber_reports_rag.backend.rag import RETRIVER
+from sber_reports_rag.utils.helpers import LLM, TAVILY_SEARCH_TOOL, GraphState
+from sber_reports_rag.utils.templates import QUERY_REWRITING_TEMPLATE, RAG_TEMPLATE
 
 
 def document_search(state: GraphState):

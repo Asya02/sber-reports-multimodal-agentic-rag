@@ -5,7 +5,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from utils.helpers import TOKENAZER
+from sber_reports_rag.utils.helpers import TOKENIZER
 
 
 def load_all_documents_from_folder(folder_path):
@@ -34,13 +34,15 @@ def load_all_documents_from_folder(folder_path):
 
 
 def count_tokens(text):
-    tokens = TOKENAZER.encode(text)
+    tokens = TOKENIZER.encode(text)
     return len(tokens)
 
 
 def get_retriever():
-    # Пример использования функции
-    folder_path = "../data/interim/texts"
+
+    dir = os.path.dirname(__file__)
+    folder_path = os.path.join(dir, r"..\..\data\interim\texts")
+    # folder_path = r"C:\Users\Anastasia\sber-reports-rag\data\interim\texts"
     docs = load_all_documents_from_folder(folder_path)
 
     print(f"Загружено документов: {len(docs)}")
@@ -60,3 +62,6 @@ def get_retriever():
     )
     retriever = db.as_retriever()
     return retriever
+
+
+RETRIVER = get_retriever()

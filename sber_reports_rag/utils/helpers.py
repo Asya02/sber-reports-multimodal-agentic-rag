@@ -7,12 +7,9 @@ from langchain_core.messages import BaseMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import add_messages
 
-from backend.rag import get_retriever
-
-TOKENAZER = tiktoken.get_encoding("cl100k_base")
+TOKENIZER = tiktoken.get_encoding("cl100k_base")
 
 TAVILY_SEARCH_TOOL = TavilySearchResults(max_results=3)
-RETRIVER = get_retriever()
 LLM = ChatOpenAI(model="gpt-4o-mini")
 
 MAX_RETRIES = 3

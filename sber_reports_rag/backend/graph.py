@@ -1,15 +1,17 @@
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from backend.nodes import (
+from sber_reports_rag.backend.nodes import (
     document_search,
     finalize_response,
     generate,
     transform_query,
     web_search,
 )
-from backend.validate_answer import grade_generation_v_documents_and_question
-from utils.helpers import GraphConfig, GraphState
+from sber_reports_rag.backend.validate_answer import (
+    grade_generation_v_documents_and_question,
+)
+from sber_reports_rag.utils.helpers import GraphConfig, GraphState
 
 
 def workflow_compiler() -> CompiledStateGraph:
@@ -37,3 +39,13 @@ def workflow_compiler() -> CompiledStateGraph:
     # Compile
     graph = workflow.compile()
     return graph
+
+
+graph = workflow_compiler()
+inputs = {"messages": [("human", "Как сбер адаптировался к новым условиям?")]}
+res = graph.invoke(inputs)
+print(res)
+
+inputs2 = {"messages": [("human", "Сколько сотрудников в Сбере")]}
+res2 = graph.invoke(inputs2)
+print(res2)

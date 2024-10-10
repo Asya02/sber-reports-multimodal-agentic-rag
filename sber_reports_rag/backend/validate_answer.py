@@ -1,10 +1,13 @@
 from typing import Literal
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
-from utils.helpers import LLM, MAX_RETRIES, GraphState
-from utils.templates import CHECK_HALLUCINATIONS_TEMPLATE
+from sber_reports_rag.utils.helpers import LLM, MAX_RETRIES, GraphState
+from sber_reports_rag.utils.templates import (
+    CHECK_HALLUCINATIONS_TEMPLATE,
+    CHECK_HALLUCINATIONS_TEMPLATE_SECOND,
+)
 
 
 class GradeHallucinations(BaseModel):
@@ -49,7 +52,7 @@ def grade_generation_v_documents_and_question(
             ("system", CHECK_HALLUCINATIONS_TEMPLATE),
             (
                 "human",
-                "Вопрос пользователя: \n\n {question} \n\n Ответ LLM: {generation}",
+                "Набор фактов: \n\n {documents} \n\n Ответ LLM: {generation}",
             ),
         ]
     )
@@ -69,7 +72,17 @@ def grade_generation_v_documents_and_question(
     print("---GRADE GENERATION vs QUESTION---")
 
     # Check question-answering
-    answer_grader = check_hallucinations_prompt | LLM.with_structured_output(
+    check_hallucinations_prompt_second = ChatPromptTemplate.from_messages(
+        [
+            ("system", CHECK_HALLUCINATIONS_TEMPLATE_SECOND),
+            (
+                "human",
+                "Вопрос пользователя: \n\n {question} \n\n Ответ LLM: {generation}",
+            ),
+        ]
+    )
+
+    answer_grader = check_hallucinations_prompt_second | LLM.with_structured_output(
         GradeAnswer
     )
     answer_grade: GradeAnswer = answer_grader.invoke(

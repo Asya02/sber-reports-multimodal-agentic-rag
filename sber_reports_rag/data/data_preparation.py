@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 from pdf2image import convert_from_path
 from PIL import Image
 
-from utils.templates import DESCRIBING_SLIDE_PROMPT_TEMPLATE
+from sber_reports_rag.utils.templates import DESCRIBING_SLIDE_PROMPT_TEMPLATE
 
 
 def save_pdf_pages_as_images(pdf_path, output_dir):
@@ -103,8 +103,8 @@ def create_texts_from_images(input_dir, output_dir):
                 print(f"Ошибка при обработке {image_filename}: {e}")
 
 
-if __name__ == "main":
-    input_dir = "../../data/interim/images/"
-    output_dir = "../../data/interim/texts/"
+# if __name__ == "main":
+#     input_dir = "../../data/interim/images/"
+#     output_dir = "../../data/interim/texts/"
 
-    create_texts_from_images(input_dir, output_dir)
+#     create_texts_from_images(input_dir, output_dir)
