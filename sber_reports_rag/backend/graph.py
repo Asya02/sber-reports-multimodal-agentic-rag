@@ -41,11 +41,11 @@ def workflow_compiler() -> CompiledStateGraph:
     return graph
 
 
-graph = workflow_compiler()
-inputs = {"messages": [("human", "Как сбер адаптировался к новым условиям?")]}
-res = graph.invoke(inputs)
-print(res)
+# graph = workflow_compiler()
+# inputs = {"messages": [("human", "Как сбер адаптировался к новым условиям?")]}
+# res = graph.invoke(inputs)
+# print(res)
 
-inputs2 = {"messages": [("human", "Сколько сотрудников в Сбере")]}
-res2 = graph.invoke(inputs2)
-print(res2)
+# inputs2 = {"messages": [("human", "Сколько сотрудников в Сбере")]}
+# res2 = graph.invoke(inputs2)
+# print(res2)
