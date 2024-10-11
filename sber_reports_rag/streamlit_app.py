@@ -12,7 +12,8 @@ def get_graph_to_streamlit():
     return graph
 
 
-graph = get_graph_to_streamlit()
+if "graph" not in st.session_state:
+    st.session_state.graph = get_graph_to_streamlit()
 
 
 def show_ui(prompt_to_user="How may I help you?"):
@@ -34,7 +35,7 @@ def show_ui(prompt_to_user="How may I help you?"):
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 inputs = {"messages": [("human", prompt)]}
-                response = graph.invoke(inputs)["candidate_answer"]
+                response = st.session_state.graph.invoke(inputs)["candidate_answer"]
                 st.write(response)
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
