@@ -38,7 +38,7 @@ def count_tokens(text):
     return len(tokens)
 
 
-def get_retriever():
+def create_retriever():
 
     dir = os.path.dirname(__file__)
     folder_path = os.path.join(dir, r"..\..\data\interim\texts")
@@ -55,13 +55,30 @@ def get_retriever():
         length_function=count_tokens,
     )
     splits = text_splitter.split_documents(docs)
+    vectorstore_path = os.path.join(dir, r"..\..\data\vectorstore")
     db = Chroma.from_documents(
-        splits,
-        HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large"),
+        persist_directory=vectorstore_path,
+        documents=splits,
+        embedding=HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large"),
         collection_name="rag-sber-reports",
     )
     retriever = db.as_retriever()
     return retriever
 
 
+def get_retriever():
+    dir = os.path.dirname(__file__)
+    vectorstore_path = os.path.join(dir, r"..\..\data\vectorstore")
+    db = Chroma(
+        collection_name="rag-sber-reports",
+        persist_directory=vectorstore_path,
+        embedding_function=HuggingFaceEmbeddings(
+            model_name="intfloat/multilingual-e5-large"
+        ),
+    )
+    retriever = db.as_retriever()
+    return retriever
+
+
 RETRIVER = get_retriever()
+# print(RETRIVER.get_relevant_documents("сотрудников сколько"))
