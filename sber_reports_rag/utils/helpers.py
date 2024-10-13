@@ -1,4 +1,4 @@
-from typing import Annotated, TypedDict
+from typing import Annotated, NotRequired, TypedDict
 
 import tiktoken
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -17,13 +17,13 @@ VERBOSE = True
 
 
 class GraphState(TypedDict):
-    messages: Annotated[list[BaseMessage], add_messages]
-    question: str
-    documents: list[Document]
-    candidate_answer: str
-    retries: int
-    web_fallback: bool
+    messages: NotRequired[Annotated[list[BaseMessage], add_messages]]
+    question: NotRequired[str]
+    documents: NotRequired[list[Document]]
+    candidate_answer: NotRequired[str]
+    retries: NotRequired[int]
+    web_fallback: NotRequired[bool]
 
 
 class GraphConfig(TypedDict):
-    max_retries: int
+    max_retries: NotRequired[int]
