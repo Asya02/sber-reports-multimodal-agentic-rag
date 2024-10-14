@@ -23,7 +23,7 @@ if "graph" not in st.session_state:
     st.session_state.graph = get_graph_to_streamlit()
 
 
-def show_ui(prompt_to_user="Спроси к меня что-нибудь") -> None:
+def show_ui(prompt_to_user="Спроси у меня что-нибудь") -> None:
     """
     Отображает пользовательский интерфейс чата.
 
