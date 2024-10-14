@@ -13,7 +13,6 @@ TAVILY_SEARCH_TOOL = TavilySearchResults(max_results=3)
 LLM = ChatOpenAI(model="gpt-4o-mini")
 
 MAX_RETRIES = 3
-VERBOSE = True
 
 
 class GraphState(TypedDict):

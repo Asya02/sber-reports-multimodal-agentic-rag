@@ -9,7 +9,17 @@ from PIL import Image
 from sber_reports_rag.utils.templates import DESCRIBING_SLIDE_PROMPT_TEMPLATE
 
 
-def save_pdf_pages_as_images(pdf_path, output_dir):
+def save_pdf_pages_as_images(pdf_path: str, output_dir: str) -> None:
+    """
+    Сохраняет страницы PDF файла в виде изображений в формате PNG.
+
+    Args:
+        pdf_path (str): Путь к PDF файлу.
+        output_dir (str): Директория, куда сохранять изображения.
+
+    Returns:
+        None
+    """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -21,33 +31,31 @@ def save_pdf_pages_as_images(pdf_path, output_dir):
         print(f"Сохранена страница {i + 1} как {image_path}")
 
 
-def encode_image(image_path):
+def encode_image(image_path: str) -> str:
     """
-    Функция для кодирования изображения в формат base64.
+    Кодирует изображение в формат base64.
 
-    Аргументы:
-    image_path: Строка, путь к изображению, которое нужно закодировать.
+    Args:
+        image_path (str): Путь к изображению.
 
-    Возвращает:
-    Закодированное в формате base64 изображение в виде строки.
+    Returns:
+        str: Закодированное в формате base64 изображение.
     """
     with open(image_path, "rb") as image_file:
         # Читаем файл изображения в бинарном режиме и кодируем в base64
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-# Функция для суммаризации изображения с использованием модели GPT
-def image_summarize(img_base64, prompt):
+def image_summarize(img_base64: str, prompt: str) -> str:
     """
-    Функция для получения суммаризации изображения с использованием GPT модели.
+    Получает суммаризацию изображения с использованием GPT модели.
 
-    Аргументы:
-    img_base64: Строка, изображение закодированное в формате base64.
-    prompt: Строка, запрос для модели GPT, содержащий инструкцию для суммаризации \
-изображения.
+    Args:
+        img_base64 (str): Закодированное в формате base64 изображение.
+        prompt (str): Запрос для GPT модели, инструкция для суммаризации.
 
-    Возвращает:
-    Суммаризация изображения, возвращенная моделью GPT.
+    Returns:
+        str: Суммаризация изображения, возвращенная моделью.
     """
     chat = ChatOpenAI(model="gpt-4o-mini")
     msg = chat.invoke(
@@ -64,15 +72,34 @@ def image_summarize(img_base64, prompt):
         ]
     )
     # Возвращаем содержимое ответа от модели
-    return msg.content
+    return msg.content  # type: ignore
 
 
-def prepare_text_from_image(img_path):
+def prepare_text_from_image(img_path: str) -> str:
+    """
+    Подготавливает текстовое описание изображения, закодированного в base64.
+
+    Args:
+        img_path (str): Путь к изображению.
+
+    Returns:
+        Optional[str]: Суммаризация изображения.
+    """
     base64_image = encode_image(img_path)
     return image_summarize(base64_image, DESCRIBING_SLIDE_PROMPT_TEMPLATE)
 
 
-def create_texts_from_images(input_dir, output_dir):
+def create_texts_from_images(input_dir: str, output_dir: str) -> None:
+    """
+    Генерирует текстовые файлы на основе изображений из директории.
+
+    Args:
+        input_dir (str): Папка, содержащая изображения.
+        output_dir (str): Папка, куда будут сохранены текстовые файлы.
+
+    Returns:
+        None
+    """
     # Проверяем, существует ли папка для текстовых файлов, если нет, создаем её
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
