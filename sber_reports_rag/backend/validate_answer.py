@@ -37,7 +37,7 @@ def grade_generation_v_documents_and_question(
     или завершить процесс.
 
     Args:
-        state (GraphState): Текущее состояние графа
+        state (GraphState): Текущее состояние графа.
 
     Returns:
         str: Решение о следующем шаге.

@@ -15,28 +15,39 @@ from sber_reports_rag.utils.helpers import GraphConfig, GraphState
 
 
 def workflow_compiler() -> CompiledStateGraph:
+    """
+    В этой функции создается граф состояния, добавляются узлы, определяющие этапы
+    выполнения запроса (поиск документов, генерация ответа, преобразование запроса, \
+веб-поиск, финализация).
+    Затем устанавливаются связи между узлами, включая условные переходы, которые оценивают \
+качество генерации ответа по сравнению с документами и вопросом. Граф затем компилируется \
+и возвращается для выполнения.
 
+    Returns:
+        CompiledStateGraph: Скомпилированный граф состояния рабочего процесса.
+    """
     workflow = StateGraph(GraphState, config_schema=GraphConfig)
 
-    # Define the nodes
+    # Добавляем узлы
     workflow.add_node("document_search", document_search)
     workflow.add_node("generate", generate)
     workflow.add_node("transform_query", transform_query)
     workflow.add_node("web_search", web_search)
     workflow.add_node("finalize_response", finalize_response)
 
-    # Build graph
+    # Определяем связи между узлами
     workflow.set_entry_point("document_search")
     workflow.add_edge("document_search", "generate")
     workflow.add_edge("transform_query", "document_search")
     workflow.add_edge("web_search", "generate")
     workflow.add_edge("finalize_response", END)
 
+    # Добавляем условные переходы для оценки качества генерации
     workflow.add_conditional_edges(
         "generate", grade_generation_v_documents_and_question
     )
 
-    # Compile
+    # Компилируем граф
     graph = workflow.compile()
     return graph
 
