@@ -11,13 +11,13 @@ from sber_reports_rag.utils.templates import (
 
 
 class GradeHallucinations(BaseModel):
-    """Binary score for hallucination present in generation answer."""
+    """Бинарная оценка, указывающая, основан ли ответ на контексте."""
 
     binary_score: str = Field(description="Ответ основан на фактах: 'да' или 'нет'")
 
 
 class GradeAnswer(BaseModel):
-    """Binary score to assess answer addresses question."""
+    """Бинарная оценка, указывающая, дан ли ответ на вопрос."""
 
     binary_score: str = Field(description="Ответ на вопрос - 'да' или 'нет'.")
 
@@ -26,13 +26,21 @@ def grade_generation_v_documents_and_question(
     state: GraphState, config
 ) -> Literal["generate", "transform_query", "web_search", "finalize_response"]:
     """
-    Determines whether the generation is grounded in the document and answers question.
+    Оценка соответствия сгенерированного ответа документам и вопросу, и принятие решения о \
+следующем шаге.
+
+    Эта функция проверяет, соответствует ли сгенерированный ответ документам, из которых он \
+был создан,
+    и правильно ли он отвечает на исходный вопрос. В зависимости от результата, функция решает,
+    какой следующий шаг выполнить: повторить генерацию, трансформировать запрос, выполнить \
+веб-поиск,
+    или завершить процесс.
 
     Args:
-        state (dict): The current graph state
+        state (GraphState): Текущее состояние графа
 
     Returns:
-        str: Decision for next node to call
+        str: Решение о следующем шаге.
     """
     question = state["question"]
     documents = state["documents"]
@@ -41,11 +49,11 @@ def grade_generation_v_documents_and_question(
     retries = state["retries"] if state.get("retries") is not None else -1
     max_retries = config.get("configurable", {}).get("max_retries", MAX_RETRIES)
 
-    # this means we've already gone through web fallback and can return to the user
+    # Если веб-поиск уже был выполнен и возвращаться к нему не нужно
     if not web_fallback:
         return "finalize_response"
 
-    print("---CHECK HALLUCINATIONS---")
+    print("Текущее действие: Проверка на галлюцинации - основан ли ответ на контексте.")
 
     check_hallucinations_prompt = ChatPromptTemplate.from_messages(
         [
@@ -63,15 +71,15 @@ def grade_generation_v_documents_and_question(
         {"documents": documents, "generation": generation}
     )  # type: ignore
 
-    # Check hallucination
+    # Проверка, основан ли ответ на документах
     if hallucination_grade.binary_score == "нет":
-        print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
+        print("Итоги проверки: Ответ модели не основан на документах. Новая попытка.")
         return "generate" if retries < max_retries else "web_search"
 
-    print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
-    print("---GRADE GENERATION vs QUESTION---")
+    print("Итоги проверки: Ответ модели основан на документах.")
+    print("Текущее действие: Проверка на галлюцинации - дан ли ответ на вопрос.")
 
-    # Check question-answering
+    # Оценка соответствия ответа вопросу
     check_hallucinations_prompt_second = ChatPromptTemplate.from_messages(
         [
             ("system", CHECK_HALLUCINATIONS_TEMPLATE_SECOND),
@@ -89,8 +97,8 @@ def grade_generation_v_documents_and_question(
         {"question": question, "generation": generation}
     )  # type: ignore
     if answer_grade.binary_score == "да":
-        print("---DECISION: GENERATION ADDRESSES QUESTION---")
+        print("Итоги проверки: Ответ на вопрос дан.")
         return "finalize_response"
     else:
-        print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
+        print("Итоги проверки: Ответ на вопрос не дан.")
         return "transform_query" if retries < max_retries else "web_search"
