@@ -131,14 +131,9 @@ def create_texts_from_images(input_dir: str, output_dir: str) -> None:
 
 
 dir = os.path.dirname(__file__)
-# pdf_path = os.path.join(dir, r"../../data/raw/Сбер 2023.pdf")
-# output_dir = os.path.join(dir, r"../../data/interim/images/")
-# save_pdf_pages_as_images(pdf_path, output_dir)
+pdf_path = os.path.join(dir, r"../../data/raw/Сбер 2023.pdf")
+output_dir = os.path.join(dir, r"../../data/interim/images/")
+save_pdf_pages_as_images(pdf_path, output_dir)
 input_dir = os.path.join(dir, r"../../data/interim/images/")
 output_dir = os.path.join(dir, r"../../data/interim/texts/")
 create_texts_from_images(input_dir, output_dir)
-# if __name__ == "main":
-#     input_dir = "../../data/interim/images/"
-#     output_dir = "../../data/interim/texts/"
-
-#     create_texts_from_images(input_dir, output_dir)
