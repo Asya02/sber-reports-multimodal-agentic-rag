@@ -79,8 +79,7 @@ sber-reports-rag/
 
 1. 
    
-   ![Первый пример](../assets/example1.png)
+   ![Первый пример](./assets/example1.png)
 
 2. 
-   ![Второй пример](../assets/example2.png)
-
+   ![Второй пример](./assets/example2.png)
